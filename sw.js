@@ -4,7 +4,7 @@
  * コメントはすべて日本語で記述されています。
  */
 
-const CACHE_NAME = 'zen-pomodoro-cache-v1';
+const CACHE_NAME = 'zen-pomodoro-cache-v2';
 
 // キャッシュ対象の静的アセット
 const ASSETS_TO_CACHE = [

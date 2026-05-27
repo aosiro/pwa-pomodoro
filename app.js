@@ -23,9 +23,6 @@ let timerState = {
   worker: null            // バックグラウンド動作用 Web Worker
 };
 
-// 点滅通知用の管理変数
-let titleFlashInterval = null;
-
 // -------------------------------------------------------------
 // DOM要素の取得
 // -------------------------------------------------------------
@@ -165,8 +162,6 @@ function initWebWorker() {
 function startTimer() {
   if (timerState.isRunning) return;
 
-  stopTitleFlashing(); // 点滅があれば停止
-
   timerState.isRunning = true;
   // 終了予定時刻を確定（ミリ秒）
   timerState.expectedEndTime = Date.now() + timerState.timeLeft * 1000;
@@ -201,8 +196,6 @@ function resetTimer(forceStop = true) {
     pauseTimer();
   }
 
-  stopTitleFlashing(); // 点滅があれば停止
-
   // 時間の再決定
   let mins = settings.workDuration;
   if (timerState.currentMode === 'shortBreak') mins = settings.shortBreakDuration;
@@ -231,8 +224,6 @@ function processTimerTick() {
 
 // タイマー表示と円形プログレスの更新
 function updateDisplay() {
-  if (titleFlashInterval) return; // 点滅中は表示更新をスキップ
-
   const minutes = Math.floor(timerState.timeLeft / 60);
   const seconds = timerState.timeLeft % 60;
   
@@ -271,8 +262,11 @@ function updateDisplay() {
 function handleTimerCompletion() {
   pauseTimer();
   playAlarm();
-  sendPushNotification();
-  startTitleFlashing(); // タブとタスクバーの点滅通知を開始
+  sendPushNotification(); // トースト通知を確実に実行
+
+  // 終了時のタブタイトル設定 (点滅させず、固定文字列に変更)
+  const statusText = timerState.currentMode === 'work' ? '休憩終了！' : '作業完了！🍅';
+  document.title = `【完了】${statusText} - ZenPomodoro`;
 
   // モードスイッチ
   if (timerState.currentMode === 'work') {
@@ -297,42 +291,6 @@ function switchMode(mode) {
 function applyModeStyles() {
   document.body.classList.toggle('mode-break', timerState.currentMode === 'shortBreak');
   document.body.classList.toggle('mode-long-break', timerState.currentMode === 'longBreak');
-}
-
-// -------------------------------------------------------------
-// タスクバー・タブタイトル点滅通知機能
-// -------------------------------------------------------------
-function startTitleFlashing() {
-  if (titleFlashInterval) return;
-
-  let isFlash = false;
-  const statusText = timerState.currentMode === 'work' ? '休憩終了！' : '作業完了！🍅';
-  
-  // タブタイトルの高速点滅アニメーション (OSのタスクバーとタブが点滅状態になります)
-  titleFlashInterval = setInterval(() => {
-    document.title = isFlash ? `【!!!】${statusText}` : `✨ ${statusText} ✨`;
-    isFlash = !isFlash;
-  }, 500);
-
-  // PWA App Badge API を使用したタスクバーアプリアイコンへの通知バッジ設定
-  if ('setAppBadge' in navigator) {
-    navigator.setAppBadge().catch(err => console.error('バッジ設定失敗:', err));
-  }
-}
-
-function stopTitleFlashing() {
-  if (titleFlashInterval) {
-    clearInterval(titleFlashInterval);
-    titleFlashInterval = null;
-    
-    // PWA アプリバッジをクリア
-    if ('clearAppBadge' in navigator) {
-      navigator.clearAppBadge().catch(err => console.error('バッジクリア失敗:', err));
-    }
-    
-    // タイマー画面の表示を通常状態にリセット
-    updateDisplay();
-  }
 }
 
 // -------------------------------------------------------------
@@ -564,11 +522,11 @@ function initEventListeners() {
     deferredPrompt = null;
   });
 
-  // ユーザーがタブに戻った時やフォーカスした時にタイトル点滅通知を消す
-  window.addEventListener('focus', stopTitleFlashing);
+  // ユーザーがタブに戻った時やフォーカスした時にタイトルを更新表示に戻す
+  window.addEventListener('focus', updateDisplay);
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-      stopTitleFlashing();
+      updateDisplay();
     }
   });
 }
