@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenPomodoro - プレミアムポモドーロタイマー</title>
+  
+  <!-- SEO メタデータ -->
+  <meta name="description" content="ZenPomodoroは、集中力を高めるためのプレミアムなPWAポモドーロタイマーです。オフライン対応、バックグラウンド通知、美しいガラスモーフィズムデザインで、日々の生産性を最大化します。">
+  <meta name="theme-color" content="#0a0a12">
+  
+  <!-- PWA マニフェストとアイコン -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  
+  <!-- Google Fonts (Inter と Outfit) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- アイコン (Font Awesome もしくはシンプルな SVG インラインを使用するが、今回は SVG で全て記述して高速ロード) -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body class="theme-neon">
+  <div class="app-background"></div>
+  
+  <div class="app-container">
+    <!-- ヘッダー -->
+    <header class="app-header">
+      <div class="logo">
+        <span class="logo-icon">🍅</span>
+        <h1>ZenPomodoro</h1>
+      </div>
+      <div class="header-actions">
+        <!-- PWA インストールボタン -->
+        <button id="pwa-install-btn" class="icon-btn tooltip" aria-label="アプリをインストール" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span class="tooltip-text">インストール</span>
+        </button>
+        <!-- 設定ボタン -->
+        <button id="settings-toggle-btn" class="icon-btn tooltip" aria-label="設定を開く">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span class="tooltip-text">設定</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <!-- タイマーセクション -->
+      <section class="timer-section glass-panel" id="timer-panel">
+        <!-- モード切り替えタブ -->
+        <div class="mode-tabs">
+          <button class="mode-tab active" data-mode="work">作業</button>
+          <button class="mode-tab" data-mode="shortBreak">短い休憩</button>
+          <button class="mode-tab" data-mode="longBreak">長い休憩</button>
+        </div>
+
+        <!-- 円形タイマー表示 -->
+        <div class="timer-display-container">
+          <svg class="timer-svg" viewBox="0 0 220 220">
+            <defs>
+              <!-- グラデーションの定義 (CSSでテーマ毎に変更可能) -->
+              <linearGradient id="progress-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="var(--gradient-start)" />
+                <stop offset="100%" stop-color="var(--gradient-end)" />
+              </linearGradient>
+              <!-- 背景リング用シャドウ -->
+              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+            <!-- バックグラウンドサークル -->
+            <circle class="timer-track" cx="110" cy="110" r="95" />
+            <!-- アクティブ進行サークル -->
+            <circle class="timer-progress" cx="110" cy="110" r="95" stroke="url(#progress-grad)" />
+          </svg>
+
+          <!-- タイマー文字情報 -->
+          <div class="timer-text-content">
+            <span id="timer-time" class="timer-time">25:00</span>
+            <span id="timer-status" class="timer-status">極上の集中を</span>
+          </div>
+        </div>
+
+        <!-- コントロールボタン -->
+        <div class="timer-controls">
+          <button id="start-pause-btn" class="primary-btn ripple" aria-label="タイマーを開始">
+            <span class="btn-icon">
+              <!-- 再生アイコン -->
+              <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <!-- 一時停止アイコン -->
+              <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            </span>
+            <span id="start-pause-text">スタート</span>
+          </button>
+          <button id="reset-btn" class="secondary-btn ripple" aria-label="タイマーをリセット">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+            <span>リセット</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer class="app-footer">
+      <p>&copy; 2026 ZenPomodoro. 精神を研ぎ澄ます時間をニキに。</p>
+    </footer>
+  </div>
+
+  <!-- 設定画面モーダル -->
+  <div id="settings-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-container glass-panel animate-scale">
+      <header class="modal-header">
+        <h3>アプリケーション設定</h3>
+        <button id="settings-close-btn" class="close-btn" aria-label="設定を閉じる">&times;</button>
+      </header>
+      
+      <div class="modal-body">
+        <!-- テーマ切り替え設定 -->
+        <div class="settings-group">
+          <h4>🎨 デザインテーマ</h4>
+          <div class="theme-selector">
+            <button class="theme-opt-btn active" data-theme="neon">
+              <span class="theme-preview neon-preview"></span>
+              サイバーネオン
+            </button>
+            <button class="theme-opt-btn" data-theme="nordic">
+              <span class="theme-preview nordic-preview"></span>
+              北欧モダン
+            </button>
+          </div>
+        </div>
+
+        <!-- 時間設定 -->
+        <div class="settings-group">
+          <h4>⏳ 時間設定 (分)</h4>
+          <div class="duration-inputs">
+            <div class="input-item">
+              <label for="input-work">作業</label>
+              <input type="number" id="input-work" min="1" max="60" value="25">
+            </div>
+            <div class="input-item">
+              <label for="input-short">短い休憩</label>
+              <input type="number" id="input-short" min="1" max="30" value="5">
+            </div>
+            <div class="input-item">
+              <label for="input-long">長い休憩</label>
+              <input type="number" id="input-long" min="1" max="60" value="15">
+            </div>
+          </div>
+        </div>
+
+        <!-- サウンド設定 -->
+        <div class="settings-group">
+          <h4>🔊 アラーム音量</h4>
+          <div class="volume-slider-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="volume-icon"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            <input type="range" id="input-volume" min="0" max="1" step="0.1" value="0.5">
+            <span id="volume-val-display">50%</span>
+          </div>
+        </div>
+
+        <!-- 通知の許可要求テスト -->
+        <div class="settings-group notification-group">
+          <div class="notification-info">
+            <h4>🔔 デスクトップ通知</h4>
+            <p>タイマー終了時にデスクトップに通知を表示します。</p>
+          </div>
+          <button id="request-notification-btn" class="secondary-btn">許可を有効化</button>
+        </div>
+      </div>
+
+      <footer class="modal-footer">
+        <button id="save-settings-btn" class="primary-btn ripple">設定を保存</button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

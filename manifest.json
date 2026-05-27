@@ -1,0 +1,24 @@
+{
+  "name": "ZenPomodoro - プレミアムポモドーロタイマー",
+  "short_name": "ZenPomo",
+  "description": "集中力を高めるためのプレミアムなガラスモーフィズムPWAポモドーロタイマー",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#070712",
+  "theme_color": "#ff3366",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}
