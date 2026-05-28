@@ -368,12 +368,25 @@ function sendPushNotification() {
       body = 'リフレッシュできたかな？次の集中を始めようぜ！🎯';
     }
 
-    new Notification(title, {
-      body: body,
-      icon: 'icons/icon-192.png',
-      tag: 'zen-pomodoro-alert',
-      requireInteraction: true // ユーザーが閉じるまで表示し続ける
-    });
+    // Service Worker 経由で通知を送信 (notificationclick で開けるようにするため)
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification(title, {
+          body: body,
+          icon: 'icons/icon-192.png',
+          tag: 'zen-pomodoro-alert',
+          requireInteraction: true // ユーザーが閉じるまで表示し続ける
+        });
+      });
+    } else {
+      // SW が使えない場合のフォールバック
+      new Notification(title, {
+        body: body,
+        icon: 'icons/icon-192.png',
+        tag: 'zen-pomodoro-alert',
+        requireInteraction: true
+      });
+    }
   }
 }
 

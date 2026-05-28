@@ -4,7 +4,7 @@
  * コメントはすべて日本語で記述されています。
  */
 
-const CACHE_NAME = 'zen-pomodoro-cache-v2';
+const CACHE_NAME = 'zen-pomodoro-cache-v3';
 
 // キャッシュ対象の静的アセット
 const ASSETS_TO_CACHE = [
@@ -90,3 +90,26 @@ self.addEventListener('fetch', (e) => {
     })
   );
 });
+
+// 4. 通知クリックイベント: 通知をクリックした時にアプリを開く
+self.addEventListener('notificationclick', (e) => {
+  // 通知を閉じる
+  e.notification.close();
+
+  // すでに開いているウィンドウを探してフォーカスするか、新しいウィンドウで開く
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // すでにアプリのタブが開いていたらそちらにフォーカス
+      for (const client of windowClients) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // 開いていなければ新しいタブでアプリを開く
+      if (clients.openWindow) {
+        return clients.openWindow('./');
+      }
+    })
+  );
+});
+
