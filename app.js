@@ -40,7 +40,6 @@ const progressCircle = document.querySelector('.timer-progress');
 const settingsModal = document.getElementById('settings-modal');
 const settingsToggleBtn = document.getElementById('settings-toggle-btn');
 const settingsCloseBtn = document.getElementById('settings-close-btn');
-const saveSettingsBtn = document.getElementById('save-settings-btn');
 const requestNotificationBtn = document.getElementById('request-notification-btn');
 
 const inputWork = document.getElementById('input-work');
@@ -451,12 +450,15 @@ function initEventListeners() {
     }
   });
 
-  // 音量スライダーの数値同期表示
+  // 音量スライダーの数値同期表示と即時保存
   inputVolume.addEventListener('input', (e) => {
-    volumeDisplay.textContent = `${Math.round(e.target.value * 100)}%`;
+    const volumeVal = parseFloat(e.target.value);
+    volumeDisplay.textContent = `${Math.round(volumeVal * 100)}%`;
+    settings.volume = volumeVal;
+    saveSettingsToStorage();
   });
 
-  // テーマのリアルタイムプレビュー切り替え
+  // テーマのリアルタイムプレビュー切り替えと保存
   themeBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       const selectedTheme = e.currentTarget.dataset.theme;
@@ -464,38 +466,31 @@ function initEventListeners() {
       themeBtns.forEach(b => b.classList.toggle('active', b === e.currentTarget));
       document.body.className = selectedTheme === 'nordic' ? 'theme-nordic' : 'theme-neon';
       applyModeStyles(); // モードのクラスも維持する
+      
+      settings.theme = selectedTheme;
+      saveSettingsToStorage();
     });
   });
 
-  // 設定の保存
-  saveSettingsBtn.addEventListener('click', () => {
-    const workVal = parseInt(inputWork.value);
-    const shortVal = parseInt(inputShort.value);
-    const longVal = parseInt(inputLong.value);
-    const volumeVal = parseFloat(inputVolume.value);
-    
-    // アクティブなテーマボタンからテーマ名を取得
-    const activeThemeBtn = document.querySelector('.theme-opt-btn.active');
-    const themeVal = activeThemeBtn ? activeThemeBtn.dataset.theme : 'neon';
+  // 時間設定の即時バリデーションと適用・保存
+  const handleDurationChange = (inputEl, settingKey, min, max, label) => {
+    inputEl.addEventListener('change', (e) => {
+      const val = parseInt(e.target.value);
+      if (isNaN(val) || val < min || val > max) {
+        alert(`${label}時間は ${min}〜${max} 分の範囲で入力してね、ニキ！`);
+        // 元の有効な値に戻す
+        e.target.value = settings[settingKey];
+        return;
+      }
+      settings[settingKey] = val;
+      saveSettingsToStorage();
+      applySettings();
+    });
+  };
 
-    // バリデーション
-    if (isNaN(workVal) || workVal < 1 || workVal > 60 ||
-        isNaN(shortVal) || shortVal < 1 || shortVal > 30 ||
-        isNaN(longVal) || longVal < 1 || longVal > 60) {
-      alert('時間は正しい数値（1〜60分）で入力してね！');
-      return;
-    }
-
-    settings.workDuration = workVal;
-    settings.shortBreakDuration = shortVal;
-    settings.longBreakDuration = longVal;
-    settings.volume = volumeVal;
-    settings.theme = themeVal;
-
-    saveSettingsToStorage();
-    applySettings();
-    closeModal();
-  });
+  handleDurationChange(inputWork, 'workDuration', 1, 60, '作業');
+  handleDurationChange(inputShort, 'shortBreakDuration', 1, 30, '短い休憩');
+  handleDurationChange(inputLong, 'longBreakDuration', 1, 60, '長い休憩');
 
   // 通知の許可要求テストボタン
   requestNotificationBtn.addEventListener('click', () => {
