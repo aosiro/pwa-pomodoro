@@ -41,6 +41,7 @@ const settingsModal = document.getElementById('settings-modal');
 const settingsToggleBtn = document.getElementById('settings-toggle-btn');
 const settingsCloseBtn = document.getElementById('settings-close-btn');
 const requestNotificationBtn = document.getElementById('request-notification-btn');
+const resetSettingsBtn = document.getElementById('reset-settings-btn');
 
 const inputWork = document.getElementById('input-work');
 const inputShort = document.getElementById('input-short');
@@ -491,6 +492,17 @@ function initEventListeners() {
   handleDurationChange(inputWork, 'workDuration', 1, 60, '作業');
   handleDurationChange(inputShort, 'shortBreakDuration', 1, 30, '短い休憩');
   handleDurationChange(inputLong, 'longBreakDuration', 1, 60, '長い休憩');
+
+  // 時刻と音量をデフォルトに戻す
+  resetSettingsBtn.addEventListener('click', () => {
+    settings.workDuration = 25;
+    settings.shortBreakDuration = 5;
+    settings.longBreakDuration = 15;
+    settings.volume = 0.5;
+    
+    saveSettingsToStorage();
+    applySettings();
+  });
 
   // 通知の許可要求テストボタン
   requestNotificationBtn.addEventListener('click', () => {
