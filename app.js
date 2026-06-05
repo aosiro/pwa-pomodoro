@@ -103,7 +103,8 @@ function saveSettingsToStorage() {
 // -------------------------------------------------------------
 function applySettings() {
   // テーマの反映
-  document.body.className = settings.theme === 'nordic' ? 'theme-nordic' : 'theme-neon';
+  document.body.className = 'theme-' + settings.theme;
+  applyModeStyles();
   
   // アクティブなテーマボタンの選択表示
   themeBtns.forEach(btn => {
@@ -465,7 +466,7 @@ function initEventListeners() {
       const selectedTheme = e.currentTarget.dataset.theme;
       
       themeBtns.forEach(b => b.classList.toggle('active', b === e.currentTarget));
-      document.body.className = selectedTheme === 'nordic' ? 'theme-nordic' : 'theme-neon';
+      document.body.className = 'theme-' + selectedTheme;
       applyModeStyles(); // モードのクラスも維持する
       
       settings.theme = selectedTheme;

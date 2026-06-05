@@ -13,6 +13,10 @@
   /* ガラスモーフィズム共通 */
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   --glass-blur: blur(14px);
+  
+  /* 共通の背景レイヤー (ダークデフォルト) */
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+  --input-bg: rgba(0, 0, 0, 0.2);
 }
 
 /* -------------------------------------------------------------
@@ -21,9 +25,9 @@
 
 /* 1. サイバーネオンテーマ (デフォルト) */
 body.theme-neon {
-  --bg-gradient: radial-gradient(circle at top, #151329 0%, #070712 100%);
-  --panel-bg: rgba(20, 18, 38, 0.45);
-  --panel-border: rgba(255, 255, 255, 0.08);
+  --bg-gradient: radial-gradient(circle at top, #1e1b4b 0%, #020617 100%);
+  --panel-bg: rgba(50, 45, 90, 0.55);
+  --panel-border: rgba(255, 255, 255, 0.15);
   --text-primary: #ffffff;
   --text-secondary: #a2a1b9;
   
@@ -46,13 +50,13 @@ body.theme-neon {
   --list-item-hover: rgba(255, 255, 255, 0.05);
 }
 
-/* 2. 北欧モダンテーマ */
+/* 2. 北欧モダンテーマ (明るいライト系にアップデート) */
 body.theme-nordic {
-  --bg-gradient: radial-gradient(circle at top, #2e3440 0%, #1e222b 100%);
-  --panel-bg: rgba(43, 49, 60, 0.55);
-  --panel-border: rgba(255, 255, 255, 0.06);
-  --text-primary: #eceff4;
-  --text-secondary: #d8dee9;
+  --bg-gradient: radial-gradient(circle at top, #eceff4 0%, #d8dee9 100%);
+  --panel-bg: rgba(255, 255, 255, 0.4);
+  --panel-border: rgba(255, 255, 255, 0.6);
+  --text-primary: #2e3440;
+  --text-secondary: #4c566a;
   
   /* グラデーション */
   --gradient-start-work: #d08770;
@@ -63,14 +67,49 @@ body.theme-nordic {
   /* アクティブ状態のカラー */
   --accent-color: #d08770;
   --accent-break: #a3be8c;
-  --shadow-accent: rgba(208, 135, 112, 0.35);
-  --shadow-break: rgba(163, 190, 140, 0.3);
+  --shadow-accent: rgba(208, 135, 112, 0.25);
+  --shadow-break: rgba(163, 190, 140, 0.2);
   
   /* ボタンとリスト */
-  --btn-secondary-bg: rgba(255, 255, 255, 0.04);
-  --btn-secondary-hover: rgba(255, 255, 255, 0.09);
-  --list-item-bg: rgba(255, 255, 255, 0.01);
-  --list-item-hover: rgba(255, 255, 255, 0.04);
+  --btn-secondary-bg: rgba(255, 255, 255, 0.5);
+  --btn-secondary-hover: rgba(255, 255, 255, 0.8);
+  --list-item-bg: rgba(255, 255, 255, 0.3);
+  --list-item-hover: rgba(255, 255, 255, 0.6);
+
+  /* レイヤーとインプット背景 */
+  --overlay-bg: rgba(255, 255, 255, 0.3);
+  --input-bg: rgba(255, 255, 255, 0.5);
+}
+
+/* 3. サクラグラス (新規追加・真のグラスモーフィズム) */
+body.theme-sakura {
+  --bg-gradient: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+  --panel-bg: rgba(255, 255, 255, 0.25);
+  --panel-border: rgba(255, 255, 255, 0.4);
+  --text-primary: #333333;
+  --text-secondary: #555555;
+  
+  /* グラデーション */
+  --gradient-start-work: #ff9a9e;
+  --gradient-end-work: #fecfef;
+  --gradient-start-break: #8fd3f4;
+  --gradient-end-break: #84fab0;
+  
+  /* アクティブ状態のカラー */
+  --accent-color: #ff6b81;
+  --accent-break: #1dd1a1;
+  --shadow-accent: rgba(255, 107, 129, 0.35);
+  --shadow-break: rgba(29, 209, 161, 0.3);
+  
+  /* ボタンとリスト */
+  --btn-secondary-bg: rgba(255, 255, 255, 0.4);
+  --btn-secondary-hover: rgba(255, 255, 255, 0.6);
+  --list-item-bg: rgba(255, 255, 255, 0.3);
+  --list-item-hover: rgba(255, 255, 255, 0.5);
+  
+  /* レイヤーとインプット背景 */
+  --overlay-bg: rgba(255, 255, 255, 0.2);
+  --input-bg: rgba(255, 255, 255, 0.4);
 }
 
 /* 現在のタイマーモードに応じた動的カラー変数 */
@@ -161,6 +200,21 @@ body {
   width: 35vw;
   height: 35vw;
   background: var(--accent-break);
+}
+
+.theme-sakura .app-background::before {
+  top: -5%;
+  right: -5%;
+  width: 40vw;
+  height: 40vw;
+  background: #ff9a9e;
+}
+.theme-sakura .app-background::after {
+  bottom: -5%;
+  left: -5%;
+  width: 35vw;
+  height: 35vw;
+  background: #a6c1ee;
 }
 
 /* メインコンテナ */
@@ -298,7 +352,7 @@ body {
 
 /* タブ切り替え */
 .mode-tabs {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--input-bg);
   border-radius: 30px;
   padding: 4px;
   display: flex;
@@ -498,7 +552,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -575,7 +629,7 @@ body {
 
 .theme-opt-btn {
   flex: 1;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--input-bg);
   border: 1px solid var(--panel-border);
   border-radius: 12px;
   color: var(--text-primary);
@@ -612,7 +666,11 @@ body {
 }
 
 .nordic-preview {
-  background: linear-gradient(135deg, #d08770, #a3be8c);
+  background: linear-gradient(135deg, #eceff4, #d8dee9);
+}
+
+.sakura-preview {
+  background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
 }
 
 /* 時間設定インプット */
@@ -635,7 +693,7 @@ body {
 }
 
 .input-item input {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--input-bg);
   border: 1px solid var(--panel-border);
   border-radius: 8px;
   color: var(--text-primary);
@@ -657,7 +715,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--input-bg);
   border: 1px solid var(--panel-border);
   border-radius: 12px;
   padding: 8px 16px;
