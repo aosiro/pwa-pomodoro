@@ -205,7 +205,8 @@ body {
 }
 
 .logo-icon {
-  font-size: 1.8rem;
+  width: 36px;
+  height: 36px;
   filter: drop-shadow(0 2px 8px var(--glow-active));
   transition: var(--transition-smooth);
 }
